@@ -7,6 +7,12 @@ app = FastAPI()
 
 models.Base.metadata.create_all(bind = engine)
 
+# System health check
+@app.get("/healthy")
+def health_check():
+    return {'status': 'Healthy'}
+
+# Routers to python applications
 app.include_router(auth.router)
 app.include_router(todos.router)
 app.include_router(admin.router)
