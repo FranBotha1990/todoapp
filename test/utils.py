@@ -33,7 +33,7 @@ def override_get_db():
 
 # Override get_current_user with hardcoded mock user object
 def override_get_current_user():
-    return {'username': 'codingwithrobytest', 'id': 1, 'user_role': 'admin'}
+    return {'username': 'codingwithrobytest', 'id': 1, 'user_role': 'Admin'}
 
 # Create a testing client in FastAPI, allowing HTTPS requests to the endpoints
 client = TestClient(app)
