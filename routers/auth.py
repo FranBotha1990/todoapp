@@ -55,6 +55,10 @@ templates = Jinja2Templates(directory = "ToDoApp/templates")
 def render_login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
+@router.get("/register-page")
+def render_register_page(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
+
 ### Endpoints ###
 
 # Authenticate user function
