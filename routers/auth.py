@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from ..models import Users
 from passlib.context import CryptContext
@@ -9,6 +9,7 @@ from starlette import status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt, JWTError
 from datetime import timedelta, datetime, timezone
+from fastapi.templating import Jinja2Templates
 
 router = APIRouter(
     prefix = '/auth',
@@ -21,6 +22,20 @@ ALGORITHM = 'HS256'
 bcrypt_context = CryptContext(schemes = ['bcrypt'], deprecated = 'auto')
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl = 'auth/token')
 
+class CreateUserRequest(BaseModel):
+    username: str
+    email: str
+    first_name: str
+    last_name: str
+    password: str
+    role: str
+    phone_number: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
 def get_db():
     db = SessionLocal()
     try:
@@ -28,6 +43,19 @@ def get_db():
     finally:
         db.close()
 
+# Dependency variable
+db_dependency = Annotated[Session, Depends(get_db)]
+
+templates = Jinja2Templates(directory = "ToDoApp/templates")
+
+
+### Pages ###
+
+@router.get("/login-page")
+def render_login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+### Endpoints ###
 
 # Authenticate user function
 def authenticate_user(username: str, password: str, db):
@@ -57,25 +85,6 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         return {'username': username, 'id': user_id, 'user_role': user_role}
     except JWTError:
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = 'Could not validate user.')
-
-
-# Dependency variable
-db_dependency = Annotated[Session, Depends(get_db)]
-
-
-class CreateUserRequest(BaseModel):
-    username: str
-    email: str
-    first_name: str
-    last_name: str
-    password: str
-    role: str
-    phone_number: str
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
 
 
 @router.post("/", status_code = status.HTTP_201_CREATED)
