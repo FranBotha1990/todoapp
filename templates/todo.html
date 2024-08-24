@@ -25,7 +25,7 @@
                     {% for todo in todos %}
                     {% if todo.complete == False %}
                     <tr class="pointer">
-                        <td>{{loop.index}}</td>
+                        <td>{{todo.id}}</td>
                         <td>{{todo.title}}</td>
                         <td>
                             <button onclick="window.location.href='edit-todo-page/{{todo.id}}'" type="button" class="btn btn-info">
